@@ -6,5 +6,6 @@
             "name": "totalonion"
         }
     ],
-    "require": {}
+    "require": {},
+    "minimum-stability": "dev"
 }
