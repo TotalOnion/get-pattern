@@ -1,0 +1,3 @@
+## Documentation coming soon...
+
+for info on creating a block pattern [confluence here](https://pernod-ricard.atlassian.net/wiki/spaces/IR/pages/30790451221/Creating+child+pattern+blocks)
