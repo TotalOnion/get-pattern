@@ -6,6 +6,7 @@
             "name": "totalonion"
         }
     ],
+    "version": "1.0.1",
     "require": {},
     "minimum-stability": "dev"
 }
