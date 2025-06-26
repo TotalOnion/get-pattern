@@ -125,19 +125,19 @@ class Fields
                 $postInfoType = 'fields.post';
             }
         }
-
-        if ($type === 'item' || $name === 'current-post-info') {
-            $frag = $dom->createDocumentFragment();
-            $frag->appendXML("{% set {$postInfo} = get_post({$postInfoType}) %}");
-
-            $section = $xpath->query('//section[1]')->item(0);
-            if ($section && $section->parentNode) {
-                $section->parentNode->insertBefore($frag, $section);
-            }
-        }
-
-        foreach ($nodes as $node) {
+        
+        foreach ($nodes as $key => $node) {
             $elem = $node->getAttribute('data-pattern-post-info');
+            
+            if ($key === 0) { 
+                $frag = $dom->createDocumentFragment();
+                $frag->appendXML("{% set {$postInfo} = get_post({$postInfoType}) %}\n");
+    
+                $section = $xpath->query('//section[1]')->item(0);
+                if ($section && $section->parentNode) {
+                    $section->parentNode->insertBefore($frag, $section);
+                }
+            }
 
             if ($elem === 'link') {
                 if (!$node->getAttribute('data-pattern-replaced')) {
