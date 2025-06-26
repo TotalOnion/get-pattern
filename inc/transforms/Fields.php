@@ -104,7 +104,7 @@ class Fields
 
         return $html;
     }
-	// Post info
+    // Post info
     private static function replaceNodeValues(string $html, string $type, string $name): string
     {
         $dom = Utils::loadDom($html);
@@ -125,14 +125,17 @@ class Fields
                 $postInfoType = 'fields.post';
             }
         }
-        
+        $imageSelectNode = $xpath->query('//*[@data-image-select]')->item(0);
+        $imageSelect = $imageSelectNode ? $imageSelectNode->getAttribute('data-image-select') : 'image';
+        $imageKey = "post_" . $imageSelect;
+
         foreach ($nodes as $key => $node) {
             $elem = $node->getAttribute('data-pattern-post-info');
-            
-            if ($key === 0) { 
+
+            if ($key === 0) {
                 $frag = $dom->createDocumentFragment();
-                $frag->appendXML("{% set {$postInfo} = get_post({$postInfoType}) %}\n");
-    
+                $frag->appendXML("<inserttwig>{% set {$postInfo} = get_post({$postInfoType}) %}</inserttwig>");
+
                 $section = $xpath->query('//section[1]')->item(0);
                 if ($section && $section->parentNode) {
                     $section->parentNode->insertBefore($frag, $section);
@@ -147,13 +150,13 @@ class Fields
                 }
             } elseif ($elem === 'post_image' || $elem === 'product_icon') {
                 $frag = $dom->createDocumentFragment();
-                $frag->appendXML("{% set image = get_image({$postInfo}.{$elem}) %}
+                $frag->appendXML("<inserttwig>{% set image = get_image({$postInfo}.{$imageKey}) %}
                 {% set isSVG = check_file_type(image.id) == 'image/svg+xml' %}
                 {% set mainImageSrc = gt_image_mainsrc(image) %}
-                {% set srcset = isSVG ? '' : gt_image_srcset(image) %}");
+                {% set srcset = isSVG ? '' : gt_image_srcset(image) %}</inserttwig>");
 
-                $img = $xpath->query('.//*[@srcset]', $node)->item(0);
-                if ($img && $img->parentNode) {
+                if ($node->nodeName === 'img' && $node->hasAttribute('srcset')) {
+                    $img = $node;
                     $img->parentNode->insertBefore($frag, $img);
                     $img->setAttribute('srcset', '{{ srcset }}');
                     $img->setAttribute('src', '{{ mainImageSrc }}');
