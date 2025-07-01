@@ -52,8 +52,8 @@ class Clean
 
         // Had to keep these wrappers in, so removing here
         $html = str_replace(
-            array('<body>', '</body>', '<head>', '</head>', '<html>', '</html>', '<inserttwig>', '</inserttwig>', 'http', '</source>'),
-            array('', '', '', '', '', '', '', '', 'https', ''),
+            array('<body>', '</body>', '<head>', '</head>', '<html>', '</html>', '<inserttwig>', '</inserttwig>', 'http:', '</source>'),
+            array('', '', '', '', '', '', '', '', 'https:', ''),
             $html
         );
 
