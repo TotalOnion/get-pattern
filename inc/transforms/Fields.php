@@ -13,6 +13,7 @@ class Fields
         $html = self::replacePostMeta($html, $type);
         $html = self::replaceGenerics($html, $type);
         $html = self::replaceNodeValues($html, $type, $name);
+        $html = self::wrapGradientOverlay($html);
         return $html;
     }
     // Repeaters
@@ -165,6 +166,35 @@ class Fields
                 }
             } else {
                 $node->nodeValue = "{{ {$postInfo}.{$elem} }}";
+            }
+        }
+        return Utils::saveDom($dom);
+    }
+    // Gradient Overlay
+    private static function wrapGradientOverlay(string $html): string
+    {
+        $dom = Utils::loadDom($html);
+        $xpath = new \DOMXPath($dom);
+        $nodes = $xpath->query('//*[@data-pattern-gradient-overlay]');
+
+        foreach ($nodes as $node) {
+            if ($node->getAttribute('data-renderdynamic') !== '1') {
+                continue;
+            }
+            
+            $container = $node->parentNode;
+
+            $start = $dom->createDocumentFragment();
+            $start->appendXML('<inserttwig>{% if fields.enable_gradient_overlay %}</inserttwig>');
+
+            $end = $dom->createDocumentFragment();
+            $end->appendXML('<inserttwig>{% endif %}</inserttwig>');
+
+            $container->parentNode->insertBefore($start, $container);
+            if ($container->nextSibling) {
+                $container->parentNode->insertBefore($end, $container->nextSibling);
+            } else {
+                $container->parentNode->appendChild($end);
             }
         }
 
