@@ -185,7 +185,7 @@ class Fields
             $container = $node->parentNode;
 
             $start = $dom->createDocumentFragment();
-            $start->appendXML('<inserttwig>{% if fields.enable_gradient_overlay %}</inserttwig>');
+            $start->appendXML('<inserttwig>{% if fields.enable_gradient_layer %}</inserttwig>');
 
             $end = $dom->createDocumentFragment();
             $end->appendXML('<inserttwig>{% endif %}</inserttwig>');

@@ -3,7 +3,7 @@
  * Plugin Name: Get Pattern
  * Description: Child Block Creator
  * Author: Total Onion
- * Version: 1.1.1
+ * Version: 1.1.2
  */
 
 if (!defined('ABSPATH')) {
