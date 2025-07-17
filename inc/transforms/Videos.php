@@ -16,7 +16,7 @@ class Videos
             foreach ($videoIds as $videoId) {
                 $pattern_replaced = $videoId->getAttribute('data-pattern-replaced');
                 if ($pattern_replaced) {
-                    return $block;
+                    return Utils::saveDom($dom);
                 } else {
                     $videoId->setAttribute('data-pattern-replaced', 1);
                 }
