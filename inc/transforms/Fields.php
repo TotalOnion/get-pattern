@@ -14,6 +14,7 @@ class Fields
         $html = self::replaceGenerics($html, $type);
         $html = self::replaceNodeValues($html, $type, $name);
         $html = self::wrapGradientOverlay($html);
+        $html = self::formReplace($html);
         return $html;
     }
     // Repeaters
@@ -181,7 +182,7 @@ class Fields
             if ($node->getAttribute('data-renderdynamic') !== '1') {
                 continue;
             }
-            
+
             $container = $node->parentNode;
 
             $start = $dom->createDocumentFragment();
@@ -195,6 +196,52 @@ class Fields
                 $container->parentNode->insertBefore($end, $container->nextSibling);
             } else {
                 $container->parentNode->appendChild($end);
+            }
+        }
+
+        return Utils::saveDom($dom);
+    }
+    // Form Selection
+    private static function formReplace(string $html): string
+    {
+        $dom = Utils::loadDom($html);
+        $xpath = new \DOMXPath($dom);
+        $nodes = $xpath->query('//*[@data-pattern-form-selection]');
+
+        foreach ($nodes as $node) {
+            $formId = $node->getAttribute('data-formid');
+            $renderDynamic = $node->getAttribute('data-renderdynamic');
+
+            [$startNode, $endNode] = Utils::findComments($node, 'inline-form');
+
+            if (!$startNode || !$endNode) {
+                continue;
+            }
+
+            $toRemove = [];
+            $current = $startNode;
+            while ($current !== null) {
+                $next = $current->nextSibling;
+                $toRemove[] = $current;
+                if ($current === $endNode) {
+                    break;
+                }
+                $current = $next;
+            }
+
+            if ($endNode->parentNode) {
+                if ( $renderDynamic === '1') {
+                    $shortcode = $dom->createTextNode("{{ function('do_shortcode', '[cdbform id=' ~ fields.form ~ ']') }}");
+                } else {
+                    $shortcode = $dom->createTextNode("{{ function('do_shortcode', '[cdbform id=" . $formId . "]') }}");
+                }
+                $endNode->parentNode->insertBefore($shortcode, $endNode);
+            }
+
+            foreach ($toRemove as $removalNode) {
+                if ($removalNode->parentNode) {
+                    $removalNode->parentNode->removeChild($removalNode);
+                }
             }
         }
 
