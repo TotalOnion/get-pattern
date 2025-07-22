@@ -38,6 +38,7 @@ class Fields
 
             $repeated = trim($tmp_dom->saveHTML());
 
+            $repeated = Links::transform($repeated, 'item');
             $repeated = Images::transform($repeated, 'item');
             $repeated = Videos::transform($repeated, 'item');
 

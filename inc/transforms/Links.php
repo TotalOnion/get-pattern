@@ -17,7 +17,7 @@ class Links
                 $pattern_replaced = $cta->getAttribute('data-pattern-replaced');
 
                 if ($pattern_replaced) {
-                    return $html;
+                    return Utils::saveDom($dom);
                 } else {
                     $cta->setAttribute('data-pattern-replaced', 1);
                 }
@@ -28,7 +28,7 @@ class Links
 
                 $anchors = $xpath->query('a', $cta);
 
-                $tmpDom = new \DOMDocument();
+                $tmpDom = Utils::newDom();
                 $tmpDom->appendChild($tmpDom->importNode($anchors[0], true));
                 $anchor = trim($tmpDom->saveHTML());
 
@@ -54,7 +54,7 @@ class Links
 
                 // Replace anchor node content
                 $newNode = $dom->createDocumentFragment();
-                $newNode->appendXML($anchor);
+                $newNode->appendXML('<![CDATA[' . $anchor . ']]>');
                 $cta->nodeValue = '';
                 $cta->appendChild($newNode);
 
