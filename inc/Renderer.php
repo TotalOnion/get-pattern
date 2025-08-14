@@ -32,10 +32,11 @@ class Renderer
         $html = Clean::replaceBlockId($html);
         $html = Clean::addBlockClass($html);
         
-        $html = Fields::transform($html, 'fields', $name);
         $html = Links::transform($html);
         $html = Images::transform($html);
         $html = Videos::transform($html);
+        
+        $html = Fields::transform($html, 'fields', $name);
         
         $html = Clean::fixHtml($html);
         $html = Clean::fixCloseTags($html);
