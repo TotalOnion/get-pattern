@@ -17,6 +17,7 @@ class Fields
         $html = self::replaceNodeValues($html, $type, $name);
         $html = self::wrapGradientOverlay($html);
         $html = self::formReplace($html);
+        $html = self::siteCopyrightReplace($html);
         return $html;
     }
     // Generic fields
@@ -214,6 +215,48 @@ class Fields
                     $shortcode = $dom->createTextNode("{{ function('do_shortcode', '[cdbform id=" . $formId . "]') }}");
                 }
                 $endNode->parentNode->insertBefore($shortcode, $endNode);
+            }
+
+            foreach ($toRemove as $removalNode) {
+                if ($removalNode->parentNode) {
+                    $removalNode->parentNode->removeChild($removalNode);
+                }
+            }
+        }
+
+        return Utils::saveDom($dom);
+    }
+    // Site Copyright Notice
+    private static function siteCopyrightReplace(string $html): string
+    {
+        $dom = Utils::loadDom($html);
+        $xpath = new \DOMXPath($dom);
+        $nodes = $xpath->query('//*[@data-pattern-site-copyright-notice]');
+
+        foreach ($nodes as $node) {
+
+            [$startNode, $endNode] = Utils::findComments($node, 'site-copyright-notice');
+
+            if (!$startNode || !$endNode) {
+                continue;
+            }
+
+            $toRemove = [];
+            $current = $startNode;
+            while ($current !== null) {
+                $next = $current->nextSibling;
+                $toRemove[] = $current;
+                if ($current === $endNode) {
+                    break;
+                }
+                $current = $next;
+            }
+
+            if ($endNode->parentNode) {
+
+                $copyright_notice = $dom->createTextNode("{{market_settings.site_copyright_notice|default('Pernod Ricard 2025')}}");
+
+                $endNode->parentNode->insertBefore($copyright_notice, $endNode);
             }
 
             foreach ($toRemove as $removalNode) {
